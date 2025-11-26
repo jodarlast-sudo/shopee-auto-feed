@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shopee Auto Feed</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .product {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Shopee Auto Product Feed</h2>
+<div id="feed">Loading…</div>
+
+<script>
+async function loadShopee() {
+  const feed = document.getElementById("feed");
+
+  try {
+    const res = await fetch("https://shopee.ph/api/v4/search/search_items?by=pop&limit=10&match_id=11035647&newest=0&order=desc&page_type=search");
+    const data = await res.json();
+
+    feed.innerHTML = "";
+
+    data.items.slice(0, 10).forEach(item => {
+      const html = `
+        <div class="product">
+          <h3>${item.item_basic.name}</h3>
+          <img src="https://cf.shopee.ph/file/${item.item_basic.image}" width="150">
+          <p>₱${item.item_basic.price / 100000}</p>
+          <a target="_blank" href="https://shopee.ph/${item.item_basic.name.replace(/ /g,'-')}?itemid=${item.itemid}&shopid=${item.shopid}">
+            View Product
+          </a>
+        </div>
+      `;
+      feed.innerHTML += html;
+    });
+  } catch (e) {
+    feed.innerHTML = "Error loading Shopee feed.";
+  }
+}
+
+loadShopee();
+</script>
+
+</body>
+</html>
